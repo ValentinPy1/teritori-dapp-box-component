@@ -1,13 +1,8 @@
-import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
-import { View, ViewStyle, StyleProp, StyleSheet } from "react-native";
+import React, { ReactNode } from "react";
+import { View, ViewStyle, StyleProp } from "react-native";
 
-import { neutral11, neutral67 } from "../../utils/style/colors";
-
-export const PrimaryBox: React.FC<{
-  width?: number;
-  height?: number;
-  fullWidth?: boolean;
+export interface PrimaryBoxProps {
+  children?: ReactNode;
   squaresBackgroundColor?: string;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
@@ -15,84 +10,35 @@ export const PrimaryBox: React.FC<{
   noBrokenCorners?: boolean;
   colors?: string[];
   noRightBrokenBorder?: boolean;
-}> = ({
-  width,
-  height,
-  fullWidth = false,
+}
+
+export const PrimaryBox: React.FC<PrimaryBoxProps> = ({
   squaresBackgroundColor = "#000000",
   disabled = false,
   style,
   mainContainerStyle,
   children,
-  colors,
-  noBrokenCorners,
-  noRightBrokenBorder,
 }) => {
-  const flatMainContainerStyle = mainContainerStyle
-    ? StyleSheet.flatten(mainContainerStyle)
-    : {};
-  const borderRadius = flatMainContainerStyle.borderRadius || 8;
-  const backgroundColor = disabled
-    ? neutral11
-    : flatMainContainerStyle.backgroundColor || "#000000";
+
+  const h = 90;
+  const w = 1090;
+  const r = 30;
+  const boxpath = `M 0 ${h - r} C 0 ${h} 0 ${h} ${r} ${h} L ${w - r} ${h} C ${w} ${h} ${w} ${h} ${w} ${h - r} L ${w} ${r} C ${w} 0 ${w} 0 ${w - r} 0 L ${r} 0 L 0 ${r} Z`;
 
   return (
-    <View style={[styles.mainContainer, fullWidth && styles.fullWidth, style]}>
-      <View style={fullWidth && styles.fullWidthSubContainer}>
-        <View style={styles.fullWidth}>
-          <LinearGradient
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            locations={[0.7, 0.8]}
-            style={[styles.gradient]}
-            colors={
-              disabled
-                ? [neutral67, "#B7B7B7"]
-                : colors
-                ? colors
-                : ["#01B7C5", "#782C96"]
-            }
-          >
-            <View
-              style={[
-                styles.contentContainer,
-                { backgroundColor, borderRadius },
-                mainContainerStyle,
-              ]}
-            >
-              {children}
-            </View>
-          </LinearGradient>
-        </View>
+    <View style={{ ...style, flex: 0.61 }}>
+      <View style={{ position: "absolute", top: 0, left: 0, zIndex: 1, width: "100%", height: "100%" }}>
+        {children}
       </View>
+      <svg xmlns="http://www.w3.org/2000/svg">
+        <path d={boxpath} stroke="url(#gradient)" strokeWidth="3" fill="#181818" />
+        <defs>
+          <linearGradient y2="0" x2="1" y1="0" x1="0" id="gradient">
+            <stop offset="0" stopColor="#01B7C5" />
+            <stop offset="1" stopColor="#782C96" />
+          </linearGradient>
+        </defs>
+      </svg>
     </View>
   );
-};
-
-const styles = StyleSheet.create({
-  mainContainer: {
-    flexDirection: "row",
-  },
-  fullWidth: {
-    width: "100%",
-  },
-  fullWidthSubContainer: {
-    width: "100%",
-  },
-  gradient: {
-    "--edge-size": "0.8em",
-    padding: 1,
-    clipPath:
-      "polygon( var(--edge-size) 0%, 100% 0, 100% calc(100% - var(--edge-size)), calc(100% - var(--edge-size)) 100%, 0 100%, 0% var(--edge-size)\n  )",
-    borderRadius: 8,
-  },
-  contentContainer: {
-    "--edge-size": "0.8em",
-    zIndex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    clipPath:
-      "polygon( var(--edge-size) 0%, 100% 0, 100% calc(100% - var(--edge-size)), calc(100% - var(--edge-size)) 100%, 0 100%, 0% var(--edge-size)\n  )",
-    borderRadius: 8,
-  },
-});
+}
